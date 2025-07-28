@@ -1,2 +1,1 @@
-//! Integer generic stuff.
-
+//! Integer generics.

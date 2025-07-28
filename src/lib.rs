@@ -4,3 +4,12 @@
 //!
 //! [badge]: https://img.shields.io/badge/github-blue?style=for-the-badge&logo=github&labelColor=grey
 //! [link]:  https://github.com/fuzz88/aoc2018
+
+pub mod utils {
+    pub mod integer;
+    pub mod parse;
+}
+
+pub mod days {
+    pub mod day01;
+}

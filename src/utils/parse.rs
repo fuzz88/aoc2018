@@ -1,4 +1,4 @@
-//! Extracts signed integers from a string, passing by all the surrounding or delimiting stuff.
+//! Extracts signed integers from a string, passing by all the surroundings.
 //!
 //! Text representation of input data in puzzles is always ASCII.
 //!
