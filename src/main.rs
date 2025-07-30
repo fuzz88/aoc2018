@@ -17,6 +17,7 @@ fn main() {
     let days: Vec<_> = days.iter().filter(|day| day_id.is_none_or(|id| id == day.id)).collect();
 
     for day in days {
+        println!();
         println!("day{:02}:", day.id);
         println!("-----------------------------------------------");
 
