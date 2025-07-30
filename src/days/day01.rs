@@ -8,11 +8,11 @@ pub fn parse(input: &str) -> Vec<i32> {
 
 /// Starting with a frequency of zero, what is the resulting frequency after all of the changes in frequency have been applied?
 pub fn part1(input: &[i32]) -> i32 {
-    0
+    (1..10).product()
 }
 
 pub fn part2(input: &[i32]) -> i32 {
-    0
+    (1..10).sum()
 }
 
 #[cfg(test)]
