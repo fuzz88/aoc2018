@@ -9,7 +9,9 @@
 use std::collections::HashSet;
 
 pub fn parse(input: &str) -> Vec<i32> {
-    input.lines().map(|line| line.parse::<i32>().unwrap()).collect()
+    let parse_int = |s: &str| s.parse().unwrap();
+
+    input.lines().map(parse_int).collect()
 }
 
 /// Starting with a frequency of zero, what is the resulting frequency after all of the changes in frequency have been applied?
