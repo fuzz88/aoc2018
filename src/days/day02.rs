@@ -1,5 +1,6 @@
 //! ## --- Day 2: Inventory Management System ---
 //!
+//! Straightforward solutions, but under 1ms for both parts.
 
 use std::collections::HashMap;
 
@@ -31,7 +32,18 @@ pub fn part1(input: &[String]) -> u32 {
 
 /// What letters are common between the two correct box IDs?
 pub fn part2(input: &[String]) -> String {
-    0.to_string()
+    for box1 in input {
+        for box2 in input {
+            if box1.chars().zip(box2.chars()).map(|(c1, c2)| (c1 != c2) as u32).sum::<u32>() == 1 {
+                return box1
+                    .chars()
+                    .zip(box2.chars())
+                    .filter_map(|(c1, c2)| (c1 == c2).then_some(c1))
+                    .collect();
+            }
+        }
+    }
+    unreachable!();
 }
 
 #[cfg(test)]
