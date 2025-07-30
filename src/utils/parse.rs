@@ -5,13 +5,16 @@
 use std::marker::PhantomData;
 use std::str::FromStr;
 
+pub trait Integer {}
+impl Integer for i32 {}
+
 pub struct ParsingSigned<'a, T> {
     data: &'a str,
     cursor: usize,
     phantom: PhantomData<T>,
 }
 
-impl<T: FromStr> Iterator for ParsingSigned<'_, T> {
+impl<T: FromStr + Integer> Iterator for ParsingSigned<'_, T> {
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -56,11 +59,11 @@ impl<T: FromStr> Iterator for ParsingSigned<'_, T> {
 }
 
 pub trait ParseOps {
-    fn iter_signed<T: FromStr>(&self) -> ParsingSigned<'_, T>;
+    fn iter_signed<T: FromStr + Integer>(&self) -> ParsingSigned<'_, T>;
 }
 
 impl ParseOps for &str {
-    fn iter_signed<T: FromStr>(&self) -> ParsingSigned<'_, T> {
+    fn iter_signed<T: FromStr + Integer>(&self) -> ParsingSigned<'_, T> {
         ParsingSigned { data: self, cursor: 0, phantom: PhantomData }
     }
 }
