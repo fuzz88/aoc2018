@@ -7,6 +7,7 @@
 
 #[doc = "Gadgets for common tasks."]
 pub mod utils {
+    pub mod integer;
     pub mod parse;
 }
 

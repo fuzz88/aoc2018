@@ -2,11 +2,9 @@
 //!
 //! Not the fastest solution, but convenient and mine. :-]
 
+use crate::utils::integer::*;
 use std::marker::PhantomData;
 use std::str::FromStr;
-
-pub trait Integer {}
-impl Integer for i32 {}
 
 pub struct ParsingSigned<'a, T> {
     data: &'a str,
