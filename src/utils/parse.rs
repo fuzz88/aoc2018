@@ -70,10 +70,11 @@ mod test {
     use super::*;
 
     #[test]
-    fn parse_string() {
-        let s = String::from("123 blabla :-1-4 12 13 5 -1234565 1234 19");
+    fn parse_signed_numbers() {
+        let s = String::from("123 blabla :-1-4 12-13-5 -1234565 1234 19");
         let numbers: Vec<i32> = s.as_str().iter_signed().collect();
 
         assert_eq!(numbers.len(), 9);
+        assert_eq!(numbers, vec![123, -1, -4, 12, -13, -5, -1234565, 1234, 19]);
     }
 }
