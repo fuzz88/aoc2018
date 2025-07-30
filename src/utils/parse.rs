@@ -16,7 +16,7 @@ impl<T: FromStr> Iterator for ParsingSigned<'_, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let bytes = self.data.as_bytes();
-        let mut cursor = &mut self.cursor;
+        let cursor = &mut self.cursor;
 
         if *cursor == bytes.len() {
             return None;
