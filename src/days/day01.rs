@@ -1,10 +1,10 @@
 //! ## --- Day 1: Chronal Calibration ---
 //! Seems simple.
 //!
-//! Part2: also tried binary search approach to check if frequency was already met, but that is
+//! In the part2 I gave a try to binary search approach to check if frequency was already met, but that is
 //! faster only for very short inputs with very short cycles.
 //!
-//! For example, for a `sample1` binary search is almost 10x faster.
+//! For example, for a `sample1` test case binary search is almost 10x faster.
 
 use std::collections::HashSet;
 
