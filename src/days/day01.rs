@@ -6,10 +6,11 @@
 //!
 //! For example, for a `sample1` test case binary search is almost 10x faster.
 
+use crate::utils::parse::*;
 use std::collections::HashSet;
 
 pub fn parse(input: &str) -> Vec<i32> {
-    input.lines().map(|line| line.parse::<i32>().unwrap()).collect()
+    input.lines().flat_map(|line| line.iter_signed().collect::<Vec<_>>()).collect()
 }
 
 /// Starting with a frequency of zero, what is the resulting frequency after all of the changes in frequency have been applied?
