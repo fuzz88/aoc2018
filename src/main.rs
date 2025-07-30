@@ -18,18 +18,18 @@ fn main() {
 
     for day in days {
         println!("day{:02}:", day.id);
-        println!("-----------------------------------");
+        println!("-----------------------------------------------");
 
         if let Ok(input_data) = fs::read_to_string(&day.input_file) {
             let (part1, part2, duration1, duration2) = (day.runner)(input_data);
 
-            println!("{:<20} [{:>10}ms]", part1, duration1.as_millis_f32());
-            println!("{:<20} [{:>10}ms]", part2, duration2.as_millis_f32());
+            println!("{:<32} [{:>10}ms]", part1, duration1.as_millis_f32());
+            println!("{:<32} [{:>10}ms]", part2, duration2.as_millis_f32());
         } else {
             eprintln!("Missing input: {}", day.input_file.display());
         }
 
-        println!("-----------------------------------");
+        println!("-----------------------------------------------");
     }
 }
 
