@@ -69,4 +69,4 @@ macro_rules! run {
     }
 }
 
-run!(day01);
+run!(day01, day02);
