@@ -21,12 +21,13 @@ fn count_freqs(s: &str) -> HashMap<char, u32> {
 
 /// What is the checksum for your list of box IDs?
 pub fn part1(input: &[String]) -> u32 {
-    let checksum_components = input.iter().map(|s| count_freqs(s.as_str())).fold((0, 0), |acc, x| {
-        (
-            acc.0 + x.values().any(|count| *count == 2) as u32,
-            acc.1 + x.values().any(|count| *count == 3) as u32,
-        )
-    });
+    let checksum_components =
+        input.iter().map(|s| count_freqs(s.as_str())).fold((0, 0), |acc, x| {
+            (
+                acc.0 + x.values().any(|count| *count == 2) as u32,
+                acc.1 + x.values().any(|count| *count == 3) as u32,
+            )
+        });
 
     checksum_components.0 * checksum_components.1
 }
