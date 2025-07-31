@@ -3,9 +3,7 @@
 pub trait Integer {}
 
 macro_rules! integer {
-    ($($t:ty),*) => {
-        $(impl Integer for $t {}),*
-    }
+    ($($t:ty),+) => ($(impl Integer for $t {})+)
 }
 
-integer!(i32);
+integer!(u32, i32);
