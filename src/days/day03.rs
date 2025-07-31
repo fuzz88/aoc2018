@@ -70,9 +70,7 @@ pub fn part1(input: &[Claim]) -> u32 {
         for x in claim.left..claim.left + claim.width {
             for y in claim.top..claim.top + claim.height {
                 if all_points.contains(&(x, y)) {
-                    if !overlapped.contains(&(x, y)) {
-                        overlapped.insert((x, y));
-                    }
+                    overlapped.insert((x, y));
                 } else {
                     all_points.insert((x, y));
                 }
