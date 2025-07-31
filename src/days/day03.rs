@@ -115,7 +115,7 @@ mod test {
     }
 
     #[test]
-    fn has_and_overlaps() {
+    fn claim_overlaps() {
         let input = "#1 @ 1,3: 4x4\n#2 @ 3,1: 4x4\n#3 @ 5,5: 2x2";
         let input_data = parse(input);
 
