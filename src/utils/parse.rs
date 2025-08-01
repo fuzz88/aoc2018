@@ -18,6 +18,16 @@ pub struct ParsingUnsigned<'a, T> {
     phantom: PhantomData<T>,
 }
 
+trait IsDigit {
+    fn is_digit(&self) -> bool;
+}
+
+impl IsDigit for u8 {
+    fn is_digit(&self) -> bool {
+        self.wrapping_sub(b'0') < 10
+    }
+}
+
 fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
     data: &str,
     cursor: &mut usize,
@@ -28,7 +38,7 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
     }
 
     let begin = loop {
-        if bytes[*cursor].wrapping_sub(b'0') < 10 {
+        if bytes[*cursor].is_digit() {
             if IS_SIGNED && *cursor > 0 && bytes[*cursor - 1] == b'-' {
                 break *cursor - 1;
             }
@@ -44,7 +54,7 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
         if *cursor == bytes.len() - 1 {
             break *cursor + 1;
         }
-        if bytes[*cursor].wrapping_sub(b'0') < 10 {
+        if bytes[*cursor].is_digit() {
             *cursor += 1;
         } else {
             break *cursor;
