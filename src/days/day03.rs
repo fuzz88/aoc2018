@@ -14,8 +14,8 @@ pub struct Claim {
     id: u32,
     left: u32,
     top: u32,
-    width: u32,
-    height: u32,
+    right: u32,
+    bottom: u32,
 }
 
 impl FromIterator<u32> for Claim {
@@ -25,30 +25,24 @@ impl FromIterator<u32> for Claim {
     {
         let mut iter = iter.into_iter();
 
-        Claim {
-            id: iter.next().unwrap(),
-            left: iter.next().unwrap(),
-            top: iter.next().unwrap(),
-            width: iter.next().unwrap(),
-            height: iter.next().unwrap(),
-        }
+        let id = iter.next().unwrap();
+        let left = iter.next().unwrap();
+        let top = iter.next().unwrap();
+        let right = left + iter.next().unwrap() - 1;
+        let bottom = top + iter.next().unwrap() - 1;
+
+        Claim { id, left, top, right, bottom }
     }
 }
 
 impl Claim {
     /// Checks if this rectangle overlaps with another one.
     fn overlaps(&self, other: &Claim) -> bool {
-        let self_right = self.left + self.width - 1;
-        let self_bottom = self.top + self.height - 1;
-
-        let other_right = other.left + other.width - 1;
-        let other_bottom = other.top + other.height - 1;
-
-        if self.left > other_right || self_right < other.left {
+        if self.left > other.right || self.right < other.left {
             return false;
         }
 
-        if self.top > other_bottom || self_bottom < other.top {
+        if self.top > other.bottom || self.bottom < other.top {
             return false;
         }
 
@@ -67,8 +61,8 @@ pub fn part1(input: &[Claim]) -> u32 {
     let mut overlapped = HashSet::new();
 
     for claim in input {
-        for x in claim.left..claim.left + claim.width {
-            for y in claim.top..claim.top + claim.height {
+        for x in claim.left..=claim.right {
+            for y in claim.top..=claim.bottom {
                 if all_points.contains(&(x, y)) {
                     overlapped.insert((x, y));
                 } else {
