@@ -10,7 +10,7 @@ use crate::utils::parse::*;
 use std::collections::HashSet;
 
 /// Claim for fabric: 2D rectangle with id.
-pub struct Claim {
+pub struct ClaimRect {
     id: u32,
     left: u32,
     top: u32,
@@ -18,7 +18,7 @@ pub struct Claim {
     bottom: u32,
 }
 
-impl FromIterator<u32> for Claim {
+impl FromIterator<u32> for ClaimRect {
     fn from_iter<T>(iter: T) -> Self
     where
         T: IntoIterator<Item = u32>,
@@ -31,32 +31,30 @@ impl FromIterator<u32> for Claim {
         let right = left + iter.next().unwrap() - 1;
         let bottom = top + iter.next().unwrap() - 1;
 
-        Claim { id, left, top, right, bottom }
+        ClaimRect { id, left, top, right, bottom }
     }
 }
 
-impl Claim {
+impl ClaimRect {
     /// Checks if this rectangle overlaps with another one.
-    fn overlaps(&self, other: &Claim) -> bool {
+    fn overlaps(&self, other: &ClaimRect) -> bool {
         if self.left > other.right || self.right < other.left {
             return false;
         }
-
         if self.top > other.bottom || self.bottom < other.top {
             return false;
         }
-
         true
     }
 }
 
-pub fn parse(input: &str) -> Vec<Claim> {
+pub fn parse(input: &str) -> Vec<ClaimRect> {
     let as_claim = |line: &str| line.iter_signed().collect();
     input.lines().map(as_claim).collect()
 }
 
 /// How many square inches of fabric are within two or more claims?
-pub fn part1(input: &[Claim]) -> u32 {
+pub fn part1(input: &[ClaimRect]) -> u32 {
     let mut all_points = HashSet::new();
     let mut overlapped = HashSet::new();
 
@@ -71,12 +69,11 @@ pub fn part1(input: &[Claim]) -> u32 {
             }
         }
     }
-
     overlapped.len() as u32
 }
 
 /// What is the ID of the only claim that doesn't overlap?
-pub fn part2(input: &[Claim]) -> u32 {
+pub fn part2(input: &[ClaimRect]) -> u32 {
     for i in 0..input.len() {
         let mut overlapped = false;
 
