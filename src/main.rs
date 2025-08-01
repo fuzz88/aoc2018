@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 fn main() {
-    println!("--- Advent of Code 2018 ---");
+    println!("\n{:^48}", "--- Advent of Code 2018 ---");
 
     let day_id = match env::args().nth(1) {
         Some(arg) => arg[3..].parse::<u8>().ok(),
@@ -18,7 +18,7 @@ fn main() {
 
     for day in days {
         println!();
-        println!("day{:02}:", day.id);
+        println!("[✓] day{:02}:", day.id);
         println!("-----------------------------------------------");
 
         if let Ok(input_data) = fs::read_to_string(&day.input_file) {
@@ -27,7 +27,7 @@ fn main() {
             println!("{:<32} [{:>10}ms]", part1, duration1.as_millis_f32());
             println!("{:<32} [{:>10}ms]", part2, duration2.as_millis_f32());
         } else {
-            eprintln!("Missing input: {}", day.input_file.display());
+            eprintln!("ERROR: missing input \"{}\"", day.input_file.display());
         }
 
         println!("-----------------------------------------------");
