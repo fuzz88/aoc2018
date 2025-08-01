@@ -2,8 +2,8 @@
 
 pub trait Integer {}
 
-macro_rules! integer {
-    ($($t:ty),+) => ($(impl Integer for $t {})+)
+macro_rules! empty_trait {
+    ($name:ident for $($t:ty)+) => ($(impl $name for $t {})+)
 }
 
-integer!(u32, i32);
+empty_trait!(Integer for u32 i32);
