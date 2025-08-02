@@ -1,12 +1,17 @@
 //! ## --- Day 4: Repose Record ---
 //!
+//!
 
+use crate::utils::parse::*;
+
+#[derive(Debug)]
 pub enum GuardAction {
     BeginsShift,
     FallsAsleep,
     WakesUp,
 }
 
+#[derive(Debug)]
 pub struct Record(u8, u8, u8, Option<u32>, GuardAction);
 
 impl<'a> FromIterator<&'a str> for Record {
@@ -17,24 +22,34 @@ impl<'a> FromIterator<&'a str> for Record {
         let mut iter = iter.into_iter();
 
         let date = iter.next().unwrap();
+        let mut date_iter = date.iter_unsigned();
+
+        let _year = date_iter.next();
+        let month = date_iter.next().unwrap();
+        let day = date_iter.next().unwrap();
+        let hour = date_iter.next().unwrap();
+        let minute = date_iter.next().unwrap();
+
         let info = iter.next().unwrap();
 
-        println!("{} {}", date, info);
+        let action = info.split_whitespace().last().unwrap();
+        let action = match action {
+            "shift" => GuardAction::BeginsShift,
+            "asleep" => GuardAction::FallsAsleep,
+            "up" => GuardAction::WakesUp,
+            act => unimplemented!("unknown action: {}", act),
+        };
 
-        todo!();
-        // let _year = iter.next();
-        // let month = iter.next().unwrap();
-        // let day = iter.next().unwrap();
-        // let hour = iter.next().unwrap();
-        // let minute = iter.next().unwrap();
-        // let guard_id = iter.next();
+        let mut info_iter = info.iter_unsigned();
+        let guard_id = info_iter.next();
 
-        // Record(month, day, if hour == 0 {minute} else {0}, guard_id,
+        Record(month, day, if hour == 0 {minute} else {0}, guard_id, action)
     }
 }
 
 pub fn parse(input: &str) -> Vec<Record> {
-    input.lines().map(|line| line.split("] ").collect()).collect()
+    let as_record = |line: &str| line.split("] ").collect();
+    input.lines().map(as_record).collect()
 }
 
 pub fn part1(input: &[Record]) -> u32 {
