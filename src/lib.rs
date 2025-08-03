@@ -11,11 +11,13 @@ pub mod utils {
     pub mod parse;
 }
 
-#[doc = "Solutions, actually."]
-pub mod days {
-    pub mod day01;
-    pub mod day02;
-    pub mod day03;
-    pub mod day04;
-    pub mod day05;
+macro_rules! days {
+    ($($day:ident),*) => {
+        #[doc = "Solutions, actually."]
+        pub mod days {
+            $(pub mod $day;)*
+        }
+    };
 }
+
+days!(day01, day02, day03, day04, day05);
