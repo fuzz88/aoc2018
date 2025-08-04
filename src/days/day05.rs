@@ -1,5 +1,9 @@
 //! ## --- Day 5: Alchemical Reduction ---
 //!
+//! Not the best solutions so far, but came up with this at the moment.
+
+use std::sync::mpsc::sync_channel;
+use std::thread;
 
 pub fn parse(input: &str) -> &[u8] {
     input.as_bytes()
@@ -27,6 +31,8 @@ pub fn part1(input: &[u8]) -> usize {
 pub fn part2(input: &[u8]) -> usize {
     let mut min_len = usize::MAX;
 
+    let (tx, rx) = sync_channel(26);
+
     for ch in b'a'..=b'z' {
         let mut input = input
             .trim_ascii_end()
@@ -35,19 +41,27 @@ pub fn part2(input: &[u8]) -> usize {
             .copied()
             .collect::<Vec<_>>();
 
-        let mut idx = 0;
-        while !input.is_empty() && idx != input.len() - 1 {
-            if input[idx].abs_diff(input[idx + 1]) == 32 {
-                input.remove(idx);
-                input.remove(idx);
-                idx = 0;
-            } else {
-                idx += 1;
-            }
-        }
+        let tx = tx.clone();
 
-        if min_len > input.len() {
-            min_len = input.len();
+        thread::spawn(move || {
+            let mut idx = 0;
+            while !input.is_empty() && idx != input.len() - 1 {
+                if input[idx].abs_diff(input[idx + 1]) == 32 {
+                    input.remove(idx);
+                    input.remove(idx);
+                    idx = 0;
+                } else {
+                    idx += 1;
+                }
+            }
+            tx.send(input.len()).unwrap();
+        });
+    }
+    drop(tx);
+
+    while let Ok(len) = rx.recv() {
+        if min_len > len {
+            min_len = len;
         }
     }
 
