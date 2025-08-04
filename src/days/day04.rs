@@ -24,44 +24,30 @@ pub struct Record(Timestamp, Option<u32>, GuardEvent);
 /// guard => (minute => times)
 type Timetable = HashMap<u32, HashMap<u8, u32>>;
 
-impl<'a> FromIterator<&'a str> for Record {
-    fn from_iter<T>(iter: T) -> Self
-    where
-        T: IntoIterator<Item = &'a str>,
-    {
-        let mut iter = iter.into_iter();
+impl<'a> From<&'a str> for Record {
+    fn from(value: &'a str) -> Self {
+        let mut iter = value.iter_unsigned();
 
-        let date = iter.next().unwrap();
-        let mut date_iter = date.iter_unsigned();
+        let _year = iter.next();
+        let month = iter.next().unwrap() as u8;
+        let day = iter.next().unwrap() as u8;
+        let hour = iter.next().unwrap() as u8;
+        let minute = iter.next().unwrap() as u8;
+        let guard_id = iter.next();
 
-        let _year = date_iter.next();
-        let month = date_iter.next().unwrap();
-        let day = date_iter.next().unwrap();
-        let hour = date_iter.next().unwrap();
-        let minute = date_iter.next().unwrap();
-
-        let info = iter.next().unwrap();
-
-        let event = info.split_whitespace().last().unwrap();
-        let event = match event {
+        let event = match value.split_whitespace().last().unwrap() {
             "shift" => GuardEvent::BeginsShift,
             "asleep" => GuardEvent::FallsAsleep,
             "up" => GuardEvent::WakesUp,
             _ => unreachable!(),
         };
 
-        let mut info_iter = info.iter_unsigned();
-        let guard_id = info_iter.next();
-
         Record(Timestamp(month, day, hour, minute), guard_id, event)
     }
 }
 
 pub fn parse(input: &str) -> Vec<Record> {
-    let as_record = |line: &str| line.split("] ").collect();
-
-    let mut records: Vec<Record> = input.lines().map(as_record).collect();
-
+    let mut records = input.lines().map(Record::from).collect::<Vec<_>>();
     records.sort_by_key(|item| item.0);
 
     records
@@ -74,17 +60,19 @@ fn calculate_timetable(input: &[Record]) -> Timetable {
     let mut guard_stats = timetable.entry(first_guard).or_default();
 
     for idx in 1..input.len() {
-        // if met new guard, start collecting it's statistics.
+        // iterate events
         let record_guard = input[idx].1;
         if let Some(next_guard) = record_guard {
+            // met new guard? start collecting it's statistics.
             guard_stats = timetable.entry(next_guard).or_default();
         }
-
-        // FallAsleep is always previous to WakesUp
+        // falling asleep always alternates by waking up.
+        // shift begins in a waking state.
         let record_event = &input[idx].2;
         if *record_event == GuardEvent::WakesUp {
-            // if hour is not 0, then minute is 0,
-            // for example, 23:58 counts as 00:00.
+            // if event happened before midnight,
+            // set time it happened to midnight.
+            // for example, 23:58 => 00:00
             let fallasleep_minute = if input[idx - 1].0.2 != 0 { 0 } else { input[idx - 1].0.3 };
             let wakesup_minute = if input[idx].0.2 != 0 { 0 } else { input[idx].0.3 };
 
