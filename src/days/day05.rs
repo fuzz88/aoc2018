@@ -2,7 +2,7 @@
 //!
 //! Not the best solutions so far, but came up with this at the moment.
 
-use std::sync::mpsc::sync_channel;
+use std::sync::mpsc::channel;
 use std::thread;
 
 pub fn parse(input: &str) -> &[u8] {
@@ -31,7 +31,7 @@ pub fn part1(input: &[u8]) -> usize {
 pub fn part2(input: &[u8]) -> usize {
     let mut min_len = usize::MAX;
 
-    let (tx, rx) = sync_channel(26);
+    let (tx, rx) = channel();
 
     for ch in b'a'..=b'z' {
         let mut input = input
