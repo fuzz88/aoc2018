@@ -1,24 +1,75 @@
 //! ## --- Day 5: Alchemical Reduction ---
 //!
 
-pub fn parse(input: &str) -> Vec<i32> {
-    vec![]
+pub fn parse(input: &str) -> &[u8] {
+    input.as_bytes()
 }
 
-pub fn part1(input: &[i32]) -> i32 {
-    0
+/// How many units remain after fully reacting the polymer you scanned?
+pub fn part1(input: &[u8]) -> usize {
+    let mut input = input.trim_ascii_end().to_owned();
+
+    let mut idx = 0;
+    while !input.is_empty() && idx != input.len() - 1 {
+        if input[idx].abs_diff(input[idx + 1]) == 32 {
+            input.remove(idx);
+            input.remove(idx);
+            idx = 0;
+        } else {
+            idx += 1;
+        }
+    }
+
+    input.len()
 }
 
-pub fn part2(input: &[i32]) -> i32 {
-    0
+/// What is the length of the shortest polymer you can produce by removing all units of exactly one type and fully reacting the result?
+pub fn part2(input: &[u8]) -> usize {
+    let mut min_len = usize::MAX;
+
+    for ch in b'a'..=b'z' {
+        let mut input = input
+            .trim_ascii_end()
+            .iter()
+            .filter(|el| **el != ch && **el != ch - 32)
+            .copied()
+            .collect::<Vec<_>>();
+
+        let mut idx = 0;
+        while !input.is_empty() && idx != input.len() - 1 {
+            if input[idx].abs_diff(input[idx + 1]) == 32 {
+                input.remove(idx);
+                input.remove(idx);
+                idx = 0;
+            } else {
+                idx += 1;
+            }
+        }
+
+        if min_len > input.len() {
+            min_len = input.len();
+        }
+    }
+
+    min_len
 }
 
 #[cfg(test)]
 mod test {
+    use super::*;
+
     #[test]
     fn sample1() {
         let input = "dabAcCaCBAcCcaDA";
+        let input_data = parse(input);
+        assert_eq!(part1(input_data), 10);
+        assert_eq!(part2(input_data), 4);
 
-        assert!(true);
+        let input = "aA";
+        let input_data = parse(input);
+        assert_eq!(part1(input_data), 0);
+        let input = "abBA";
+        let input_data = parse(input);
+        assert_eq!(part1(input_data), 0);
     }
 }
