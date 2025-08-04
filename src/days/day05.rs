@@ -2,6 +2,7 @@
 //!
 //! Not the best solutions so far, but came up with this at the moment.
 
+use std::collections::VecDeque;
 use std::sync::mpsc::channel;
 use std::thread;
 
@@ -11,16 +12,28 @@ pub fn parse(input: &str) -> &[u8] {
 
 /// How many units remain after fully reacting the polymer you scanned?
 pub fn part1(input: &[u8]) -> usize {
-    let mut input = input.trim_ascii_end().to_owned();
+    let mut input = VecDeque::from(input.trim_ascii_end().to_owned());
+    let mut rotations = 0;
 
-    let mut idx = 0;
-    while !input.is_empty() && idx != input.len() - 1 {
-        if input[idx].abs_diff(input[idx + 1]) == 32 {
-            input.remove(idx);
-            input.remove(idx);
-            idx = 0;
+    loop {
+        // println!("{:?}", &input);
+        // println!("{}", rotations);
+        if input[0].abs_diff(input[1]) == 32 {
+            input.pop_front();
+            input.pop_front();
+            // println!("pop");
+
+            if input.is_empty() {
+                break;
+            }
+            input.rotate_right(1);
+            rotations = 0;
         } else {
-            idx += 1;
+            input.rotate_left(1);
+            rotations += 1;
+            if rotations == input.len() {
+                break;
+            }
         }
     }
 
