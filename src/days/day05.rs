@@ -1,6 +1,13 @@
 //! ## --- Day 5: Alchemical Reduction ---
 //!
-//! Not the best solutions so far, but came up with this at the moment.
+//! Nice. Came up with rotations and `VecDeque`, remembering [[Day 19, 2016]](<https://github.com/fuzz88/aoc2016/blob/ebc64f89adbdbf825d8ed03081cade4404c0a2e8/day19/p1/main.rs#L19>)
+//!
+//! My original solution for [Day19, 2016] was slow, about 1,5min as far as I remember.
+//! I realised, that slow part was inserting and deleting elements in Vec, which is O(n).
+//! Before I started to optimize and research how to avoid those inserts and deletions I asked chatgpt, because I was really in doubt. 
+//! "Is there some formulae as in part 1?", which I derived by cranking through some numbers by hand,
+//! and it said "No, there is no formulae, but you can use `VecDeque` to speed up things". 🫠 Oh,
+//! damn.
 
 use std::collections::VecDeque;
 use std::sync::mpsc::channel;
@@ -12,18 +19,15 @@ pub fn parse(input: &str) -> &[u8] {
 
 /// How many units remain after fully reacting the polymer you scanned?
 pub fn part1(input: &[u8]) -> usize {
-    let mut input = VecDeque::from(input.trim_ascii_end().to_owned());
+    let mut input = VecDeque::from(input.to_owned());
     let mut rotations = 0;
 
     loop {
-        // println!("{:?}", &input);
-        // println!("{}", rotations);
         if input[0].abs_diff(input[1]) == 32 {
             input.pop_front();
             input.pop_front();
-            // println!("pop");
 
-            if input.is_empty() {
+            if input[0] == 10 {
                 break;
             }
             input.rotate_right(1);
@@ -37,37 +41,50 @@ pub fn part1(input: &[u8]) -> usize {
         }
     }
 
-    input.len()
+    input.len() - 1
 }
 
-/// What is the length of the shortest polymer you can produce by removing all units of exactly one type and fully reacting the result?
+/// What is the length of the shortest polymer you can produce
+/// by removing all units of exactly one type and fully reacting the result?
 pub fn part2(input: &[u8]) -> usize {
     let mut min_len = usize::MAX;
 
     let (tx, rx) = channel();
 
     for ch in b'a'..=b'z' {
-        let mut input = input
-            .trim_ascii_end()
-            .iter()
-            .filter(|el| **el != ch && **el != ch - 32)
-            .copied()
-            .collect::<Vec<_>>();
+        let mut input = VecDeque::from(input.to_owned());
 
         let tx = tx.clone();
 
         thread::spawn(move || {
-            let mut idx = 0;
-            while !input.is_empty() && idx != input.len() - 1 {
-                if input[idx].abs_diff(input[idx + 1]) == 32 {
-                    input.remove(idx);
-                    input.remove(idx);
-                    idx = 0;
+            let mut rotations = 0;
+
+            loop {
+                if input[0] == ch || input[0] == ch - 32 {
+                    input.pop_front();
+                    input.rotate_right(1);
+                    continue;
+                }
+
+                if input[0].abs_diff(input[1]) == 32 {
+                    input.pop_front();
+                    input.pop_front();
+
+                    if input[0] == 10 {
+                        break;
+                    }
+                    input.rotate_right(1);
+                    rotations = 0;
                 } else {
-                    idx += 1;
+                    input.rotate_left(1);
+                    rotations += 1;
+                    if rotations == input.len() {
+                        break;
+                    }
                 }
             }
-            tx.send(input.len()).unwrap();
+
+            tx.send(input.len() - 1).unwrap();
         });
     }
     drop(tx);
@@ -87,15 +104,15 @@ mod test {
 
     #[test]
     fn sample1() {
-        let input = "dabAcCaCBAcCcaDA";
+        let input = "dabAcCaCBAcCcaDA\n";
         let input_data = parse(input);
         assert_eq!(part1(input_data), 10);
         assert_eq!(part2(input_data), 4);
 
-        let input = "aA";
+        let input = "aA\n";
         let input_data = parse(input);
         assert_eq!(part1(input_data), 0);
-        let input = "abBA";
+        let input = "abBA\n";
         let input_data = parse(input);
         assert_eq!(part1(input_data), 0);
     }
