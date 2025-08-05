@@ -4,7 +4,7 @@
 //!
 //! My original solution for [Day19, 2016] was slow, about 1,5min as far as I remember.
 //! I realised, that slow part was inserting and deleting elements in Vec, which is O(n).
-//! Before I started to optimize and research how to avoid those inserts and deletions I asked chatgpt, because I was really in doubt. 
+//! Before I started to optimize and research how to avoid those inserts and deletions I asked chatgpt, because I was really in doubt.
 //! "Is there some formulae as in part 1?", which I derived by cranking through some numbers by hand,
 //! and it said "No, there is no formulae, but you can use `VecDeque` to speed up things". 🫠 Oh,
 //! damn.
@@ -20,22 +20,15 @@ pub fn parse(input: &str) -> &[u8] {
 /// How many units remain after fully reacting the polymer you scanned?
 pub fn part1(input: &[u8]) -> usize {
     let mut input = VecDeque::from(input.to_owned());
-    let mut rotations = 0;
 
     loop {
-        if input[0].abs_diff(input[1]) == 32 {
+        if input.len() > 1 && input[0].abs_diff(input[1]) == 32 {
             input.pop_front();
             input.pop_front();
-
-            if input[0] == 10 {
-                break;
-            }
             input.rotate_right(1);
-            rotations = 0;
         } else {
             input.rotate_left(1);
-            rotations += 1;
-            if rotations == input.len() {
+            if input[0] == 10 {
                 break;
             }
         }
@@ -53,37 +46,26 @@ pub fn part2(input: &[u8]) -> usize {
 
     for ch in b'a'..=b'z' {
         let mut input = VecDeque::from(input.to_owned());
-
         let tx = tx.clone();
 
         thread::spawn(move || {
-            let mut rotations = 0;
-
             loop {
                 if input[0] == ch || input[0] == ch - 32 {
                     input.pop_front();
                     input.rotate_right(1);
                     continue;
                 }
-
-                if input[0].abs_diff(input[1]) == 32 {
+                if input.len() > 1 && input[0].abs_diff(input[1]) == 32 {
                     input.pop_front();
                     input.pop_front();
-
-                    if input[0] == 10 {
-                        break;
-                    }
                     input.rotate_right(1);
-                    rotations = 0;
                 } else {
                     input.rotate_left(1);
-                    rotations += 1;
-                    if rotations == input.len() {
+                    if input[0] == 10 {
                         break;
                     }
                 }
             }
-
             tx.send(input.len() - 1).unwrap();
         });
     }
