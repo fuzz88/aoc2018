@@ -44,6 +44,8 @@ pub fn part2(input: &[u8]) -> usize {
 
     let (tx, rx) = channel();
 
+    // we may here collect actual units of the polymer,
+    // to avoid unnecessary calculations for shorter inputs.
     for ch in b'a'..=b'z' {
         let mut input = VecDeque::from(input.to_owned());
         let tx = tx.clone();
