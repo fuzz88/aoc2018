@@ -2,30 +2,37 @@
 //!
 
 use crate::utils::parse::*;
+use std::collections::HashSet;
 
 /// (0, 0) at top left.
 #[derive(Debug, Copy, Clone)]
 pub struct Point {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
+}
+
+impl Point {
+    fn manhattan_distance(&self, other: &Point) -> u32 {
+        self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    }
 }
 
 /// Global bounding box contains (bounds) all the points.
 #[derive(Debug)]
 pub struct BoundingBox {
-    top: u32,
-    left: u32,
-    right: u32,
-    bottom: u32,
+    top: i32,
+    left: i32,
+    right: i32,
+    bottom: i32,
 }
 
 impl From<&[Point]> for BoundingBox {
-    /// Calculates the boundings for the list of points.
+    /// Calculates the bounding for the list of points.
     fn from(points: &[Point]) -> Self {
-        let mut top = u32::MAX; // min_y
-        let mut left = u32::MAX; // min_x
-        let mut right = u32::MIN; // max_x
-        let mut bottom = u32::MIN; // max_y
+        let mut top = i32::MAX; // min_y
+        let mut left = i32::MAX; // min_x
+        let mut right = i32::MIN; // max_x
+        let mut bottom = i32::MIN; // max_y
 
         for point in points {
             if point.x > right {
@@ -49,7 +56,7 @@ impl From<&[Point]> for BoundingBox {
 }
 
 impl BoundingBox {
-    /// Checks if the point is inside the BoundingBox.
+    /// Checks if the point is inside the `BoundingBox`.
     fn contains(&self, point: &Point) -> bool {
         point.x > self.left && point.x < self.right && point.y > self.top && point.y < self.bottom
     }
@@ -71,7 +78,10 @@ pub fn parse(input: &str) -> Vec<Point> {
 }
 
 pub fn part1(input: &[Point]) -> usize {
-    dbg!(BoundingBox::from(input));
+    let bounding_box = BoundingBox::from(input);
+
+    dbg!(bounding_box);
+
     0
 }
 
