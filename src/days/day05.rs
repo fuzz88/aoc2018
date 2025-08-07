@@ -7,7 +7,9 @@
 //! Before I started to optimize and research how to avoid those inserts and deletions I asked chatgpt, because I was really in doubt.
 //! "Is there some formulae as in part 1?", which I derived by cranking through some numbers by hand,
 //! and it said "No, there is no formulae, but you can use `VecDeque` to speed up things". 🫠 Oh,
-//! damn.
+//! damn. No chatgpt since, except [[Day 23,
+//! 2017]](<https://github.com/fuzz88/aoc2017/blob/c1546d348d7c0963c6991e8169ccfefdd09c876f/day23/main.rs#L165>),
+//!      which is also would be better to spend some more time by myself, actually.
 
 use std::collections::VecDeque;
 use std::sync::mpsc::channel;
