@@ -20,6 +20,7 @@ pub struct BoundingBox {
 }
 
 impl From<&[Point]> for BoundingBox {
+    /// Calculates the boundings for the list of points.
     fn from(points: &[Point]) -> Self {
         let mut top = u32::MAX; // min_y
         let mut left = u32::MAX; // min_x
@@ -48,6 +49,7 @@ impl From<&[Point]> for BoundingBox {
 }
 
 impl BoundingBox {
+    /// Checks if the point is inside the BoundingBox.
     fn contains(&self, point: &Point) -> bool {
         point.x > self.left && point.x < self.right && point.y > self.top && point.y < self.bottom
     }
