@@ -70,4 +70,4 @@ macro_rules! run {
     }
 }
 
-run!(day01, day02, day03, day04, day05, day06);
+run!(day01, day02, day03, day04, day05, day06, day07);
