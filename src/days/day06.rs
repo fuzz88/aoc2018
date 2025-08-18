@@ -2,10 +2,10 @@
 //!
 
 use crate::utils::parse::*;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 /// (0, 0) at top left.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
 pub struct Point {
     x: i32,
     y: i32,
@@ -77,10 +77,70 @@ pub fn parse(input: &str) -> Vec<Point> {
     input.lines().map(Point::from).collect()
 }
 
+type Distances = HashMap<Point, HashMap<usize, u32>>;
+
+fn get_area_size(
+    idx: usize,
+    loc: Point,
+    distances: &Distances,
+    bounding_box: &BoundingBox,
+) -> Option<usize> {
+    println!("Calculating area for: {:?}", loc);
+    let mut area = HashSet::<Point>::new();
+    let mut to_process = vec![];
+
+    area.insert(loc);
+    to_process.push(loc);
+
+    let is_closest = |p: Point| {
+        println!("    Checking for closest: {:?}", p);
+        let point_distances = distances.get(&p).unwrap();
+        let current_distance = point_distances.get(&idx).unwrap();
+        point_distances.iter().all(|(i, x)| *i != idx && x > current_distance)
+    };
+
+    while let Some(next_loc) = to_process.pop() {
+        for dx in -1..=1 {
+            for dy in -1..=1 {
+                if (dx == 0 && dy != 0) || (dy == 0 && dx != 0) {
+                    let nx = next_loc.x + dx;
+                    let ny = next_loc.y + dy;
+                    let neighbour = Point { x: nx, y: ny };
+                    println!("  Have neighbour: {:?}", neighbour);
+                    if !bounding_box.contains(&neighbour) {
+                        println!("    Not in the bounding box");
+                        return None;
+                    }
+                    if is_closest(neighbour) {
+                        println!("    Is closest");
+                        area.insert(neighbour);
+                        to_process.push(neighbour);
+                    }
+                }
+            }
+        }
+    }
+
+    Some(area.len())
+}
+
 pub fn part1(input: &[Point]) -> usize {
     let bounding_box = BoundingBox::from(input);
+    let mut distances = Distances::new();
 
-    dbg!(bounding_box);
+    for col in bounding_box.left..=bounding_box.right {
+        for row in bounding_box.top..=bounding_box.bottom {
+            for (idx, loc) in input.iter().enumerate() {
+                let current_point = Point { x: col, y: row };
+                let point_distances = distances.entry(current_point).or_default();
+                point_distances.insert(idx, loc.manhattan_distance(&current_point));
+            }
+        }
+    }
+
+    for (idx, loc) in input.iter().enumerate() {
+        println!("{}: {:?}", idx, get_area_size(idx, *loc, &distances, &bounding_box));
+    }
 
     0
 }
