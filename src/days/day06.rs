@@ -2,93 +2,24 @@
 //!
 //! I do not like this solution. TBD: why?
 
-use crate::utils::parse::*;
+use crate::utils::point::{BoundingBox, Point};
 use std::collections::{HashMap, HashSet};
 
-/// Point(0, 0) is the top left.
-#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
-pub struct Point {
-    x: i32,
-    y: i32,
-}
-
-impl Point {
-    fn manhattan_distance(self, other: Point) -> u32 {
-        self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
-    }
-}
-
-/// Minimal bounding box that contains all the points.
-#[derive(Debug)]
-pub struct BoundingBox {
-    top: i32,
-    left: i32,
-    right: i32,
-    bottom: i32,
-}
-
-impl From<&[Point]> for BoundingBox {
-    /// Calculates the bounding for the list of points.
-    fn from(points: &[Point]) -> Self {
-        let mut top = i32::MAX; // min_y
-        let mut left = i32::MAX; // min_x
-        let mut right = i32::MIN; // max_x
-        let mut bottom = i32::MIN; // max_y
-
-        for point in points {
-            if point.x > right {
-                right = point.x + 1;
-            }
-            if point.x < left {
-                assert!(point.x > 0);
-                left = point.x - 1;
-            }
-            if point.y > bottom {
-                bottom = point.y + 1;
-            }
-            if point.y < top {
-                assert!(point.y > 0);
-                top = point.y - 1;
-            }
-        }
-
-        BoundingBox { top, left, right, bottom }
-    }
-}
-
-impl BoundingBox {
-    /// Checks if the point is inside the `BoundingBox`.
-    fn contains(&self, point: Point) -> bool {
-        point.x > self.left && point.x < self.right && point.y > self.top && point.y < self.bottom
-    }
-}
-
-impl From<&str> for Point {
-    fn from(value: &str) -> Self {
-        let mut iter = value.iter_unsigned();
-
-        let x = iter.next().unwrap();
-        let y = iter.next().unwrap();
-
-        Point { x, y }
-    }
-}
+type Distances = HashMap<Point, HashMap<usize, u32>>;
+type DistancesClosest = HashMap<Point, usize>;
 
 pub fn parse(input: &str) -> Vec<Point> {
     input.lines().map(Point::from).collect()
 }
 
-type Distances = HashMap<Point, HashMap<usize, u32>>;
-type DistancesClosest = HashMap<Point, usize>;
-
-/// `DFS` traverses closest area of the location given.
+/// `DFS` traverses closest area of the location.
 fn get_area_size(
     idx: usize,
     loc: Point,
     distances_closest: &DistancesClosest,
     bounding_box: &BoundingBox,
 ) -> usize {
-    // let's collect points into area of the given location.
+    // let's calculate closest area of the location.
     let mut area = HashSet::<Point>::new();
     let mut to_process = vec![];
 

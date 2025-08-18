@@ -9,6 +9,7 @@
 pub mod utils {
     pub mod integer;
     pub mod parse;
+    pub mod point;
 }
 
 macro_rules! days {
