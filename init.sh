@@ -37,6 +37,8 @@ pub fn part2(input: &[i32]) -> i32 {
 
 #[cfg(test)]
 mod test {
+    use super::*;
+
     #[test]
     fn sample1() {
         assert!(true);
