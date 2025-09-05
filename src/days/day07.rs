@@ -1,25 +1,24 @@
 //! ## --- Day 7: The Sum of Its Parts ---
 //!
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, BTreeMap};
 
 type Steps = HashMap<u8, Vec<u8>>;
 
 pub fn parse(input: &str) -> Steps {
     let mut steps = Steps::new();
 
-    for line in input.lines() {
+    input.lines().for_each(|line| {
         let bytes = line.as_bytes();
         steps.entry(bytes[5]).or_default().push(bytes[36]);
-    }
+    });
 
-    for (k, v) in &mut steps {
-        v.sort_unstable_by(|a, b| b.cmp(a));
-    }
+    steps.values_mut().for_each(|children| {
+        children.sort_unstable_by(|a, b| b.cmp(a));
+    });
 
     steps
 }
-
 
 pub fn part1(input: &Steps) -> String {
     String::from("foo")
