@@ -22,50 +22,7 @@ pub fn parse(input: &str) -> Steps {
 
 
 pub fn part1(input: &Steps) -> String {
-    let mut dependants: Vec<u8> = input.iter().flat_map(|(k, v)| v).copied().collect();
-    dependants.sort_unstable();
-    dependants.dedup();
-    let mut starters = vec![];
-    
-    for step in input.keys() {
-        if let Err(_) = dependants.binary_search(step) {
-            println!("{}", *step);
-            starters.push(*step);
-        }
-    }
-
-    starters.sort_unstable();
-
-    println!("{:?}", starters);
-    println!("{:?}", dependants);
-
-    let mut order = String::new();
-    let mut seen = HashSet::<u8>::new();
-
-    fn dfs(step: u8, input: &Steps, seen: &mut HashSet<u8>, order: &mut String) {
-        seen.insert(step);
-        if let Some(deps) = input.get(&step) {
-            for dep in deps.iter() {
-                if !seen.contains(dep) {
-                    dfs(*dep, input, seen, order);
-                }
-            }
-        }
-        order.push(step as char);
-    }
-
-   let starters = [65]; 
-
-    for starter in starters {
-        let mut sub_order = String::new();
-        dfs(starter, input, &mut seen, &mut sub_order);
-        let s: String = sub_order.chars().rev().collect();
-        println!("{}", s);
-        println!("{}", s.len());
-        order.push_str(&s);
-    }
-
-    order
+    String::from("foo")
 }
 
 pub fn part2(input: &Steps) -> i32 {
