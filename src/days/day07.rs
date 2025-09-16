@@ -1,6 +1,6 @@
 //! ## --- Day 7: The Sum of Its Parts ---
 //!
-//! I struggled with this problem couple of month ago. Very first idea that I came up to was to use
+//! I struggled with this problem couple of month ago. Very first idea that I came up with was to use
 //! some kind of topological sorting. That appeared to be right. I studied wikipedia article on the topic, and
 //! tried to implement pseudocode given there, but failed miserably. Then I looked up the solution in the repo
 //! nearby, found notes on topological sorting, and decided to take a pause from solving those problems.
@@ -62,8 +62,57 @@ pub fn part1(input: &Steps) -> String {
     result
 }
 
-pub fn part2(input: &Steps) -> i32 {
-    0
+fn part2_testable(input: &Steps, workers_num: u8, duration_base: u32) -> u32 {
+    let mut duration: u32 = 0;
+    let mut workers: u8 = workers_num;
+    let mut ready = BTreeMap::<u8, Step>::new();
+    let mut blocked = HashMap::<u8, Step>::new();
+    let mut processing = vec![];
+
+    for (&idx, step) in input {
+        if step.deps_count == 0 {
+            ready.insert(idx, step.clone());
+        } else {
+            blocked.insert(idx, step.clone());
+        }
+    }
+
+    loop {
+        while workers > 0
+            && let Some((idx, step)) = ready.pop_first()
+        {
+            processing.push((idx, step, duration));
+            workers -= 1;
+        }
+
+        if processing.is_empty() {
+            break;
+        }
+
+        duration += 1;
+
+        for (i, (idx, step, started)) in processing.clone().iter().enumerate() {
+            if duration - started == duration_base + *idx as u32 - 64 {
+                processing.remove(i);
+                if workers < workers_num {
+                    workers += 1;
+                }
+                for child in step.children.iter() {
+                    let step = blocked.get_mut(child).unwrap();
+                    step.deps_count -= 1;
+                    if step.deps_count == 0 {
+                        ready.insert(*child, step.clone());
+                    }
+                }
+            }
+        }
+    }
+
+    duration
+}
+
+pub fn part2(input: &Steps) -> u32 {
+    part2_testable(input, 5, 60)
 }
 
 #[cfg(test)]
@@ -81,8 +130,7 @@ Step B must be finished before step E can begin.
 Step D must be finished before step E can begin.
 Step F must be finished before step E can begin.";
         let input_data = parse(&input);
-        println!("{:?}", input_data);
         assert_eq!(part1(&input_data), "CABDFE");
-        assert!(true);
+        assert_eq!(part2_testable(&input_data, 2, 0), 15);
     }
 }
