@@ -11,16 +11,10 @@ use std::collections::{BTreeMap, HashMap};
 
 type Steps = HashMap<u8, Step>;
 
-#[derive(Debug, Clone)]
+#[derive(Default, Clone)]
 pub struct Step {
     pub children: Vec<u8>,
     pub deps_count: usize,
-}
-
-impl Default for Step {
-    fn default() -> Self {
-        Step { children: vec![], deps_count: 0 }
-    }
 }
 
 pub fn parse(input: &str) -> Steps {
@@ -37,21 +31,18 @@ pub fn parse(input: &str) -> Steps {
 
 pub fn part1(input: &Steps) -> String {
     let mut result = String::new();
-    let mut ready = BTreeMap::<u8, Step>::new();
-    let mut blocked = HashMap::<u8, Step>::new();
 
-    for (&idx, step) in input {
-        if step.deps_count == 0 {
-            ready.insert(idx, step.clone());
-        } else {
-            blocked.insert(idx, step.clone());
-        }
-    }
+    let mut all = input.clone();
+    let mut ready: BTreeMap<u8, Step> = all
+        .iter()
+        .filter(|&(_, step)| step.deps_count == 0)
+        .map(|(idx, step)| (*idx, step.clone()))
+        .collect();
 
     while let Some((idx, step)) = ready.pop_first() {
         result.push(idx as char);
-        for child in step.children.iter() {
-            let step = blocked.get_mut(child).unwrap();
+        for child in &step.children {
+            let step = all.get_mut(child).unwrap();
             step.deps_count -= 1;
             if step.deps_count == 0 {
                 ready.insert(*child, step.clone());
@@ -65,23 +56,21 @@ pub fn part1(input: &Steps) -> String {
 fn part2_testable(input: &Steps, workers_num: u8, duration_base: u32) -> u32 {
     let mut duration: u32 = 0;
     let mut workers: u8 = workers_num;
-    let mut ready = BTreeMap::<u8, Step>::new();
-    let mut blocked = HashMap::<u8, Step>::new();
-    let mut processing = vec![];
 
-    for (&idx, step) in input {
-        if step.deps_count == 0 {
-            ready.insert(idx, step.clone());
-        } else {
-            blocked.insert(idx, step.clone());
-        }
-    }
+    let mut all = input.clone();
+    let mut ready: BTreeMap<u8, Step> = all
+        .iter()
+        .filter(|&(_, step)| step.deps_count == 0)
+        .map(|(idx, step)| (*idx, step.clone()))
+        .collect();
+
+    let mut processing = vec![];
 
     loop {
         while workers > 0
-            && let Some((idx, step)) = ready.pop_first()
+            && let Some((step_idx, step)) = ready.pop_first()
         {
-            processing.push((idx, step, duration));
+            processing.push((step_idx, step, duration));
             workers -= 1;
         }
 
@@ -91,14 +80,14 @@ fn part2_testable(input: &Steps, workers_num: u8, duration_base: u32) -> u32 {
 
         duration += 1;
 
-        for (i, (idx, step, started)) in processing.clone().iter().enumerate() {
-            if duration - started == duration_base + *idx as u32 - 64 {
-                processing.remove(i);
+        for (processing_idx, (step_idx, step, started)) in processing.clone().iter().enumerate() {
+            if duration - started == duration_base + *step_idx as u32 - 64 {
+                processing.remove(processing_idx);
                 if workers < workers_num {
                     workers += 1;
                 }
-                for child in step.children.iter() {
-                    let step = blocked.get_mut(child).unwrap();
+                for child in &step.children {
+                    let step = all.get_mut(child).unwrap();
                     step.deps_count -= 1;
                     if step.deps_count == 0 {
                         ready.insert(*child, step.clone());
@@ -129,7 +118,7 @@ Step A must be finished before step D can begin.
 Step B must be finished before step E can begin.
 Step D must be finished before step E can begin.
 Step F must be finished before step E can begin.";
-        let input_data = parse(&input);
+        let input_data = parse(input);
         assert_eq!(part1(&input_data), "CABDFE");
         assert_eq!(part2_testable(&input_data, 2, 0), 15);
     }
