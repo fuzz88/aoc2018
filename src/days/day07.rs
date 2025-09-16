@@ -32,10 +32,6 @@ pub fn parse(input: &str) -> Steps {
         steps.entry(bytes[36]).or_default().deps_count += 1;
     });
 
-    steps.values_mut().for_each(|step| {
-        step.children.sort_unstable_by(|a, b| b.cmp(a));
-    });
-
     steps
 }
 
