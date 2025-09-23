@@ -51,8 +51,24 @@ pub fn part1(root: &Node) -> u32 {
     meta_sum
 }
 
-pub fn part2(root: &Node) -> i32 {
-    0
+fn get_value(node: &Node) -> u32 {
+    if node.children.is_empty() {
+        return node.meta.iter().sum();
+    }
+
+    let mut value = 0;
+
+    for &node_idx in &node.meta {
+        if node_idx != 0 && node_idx <= node.children.len() as u32 {
+            value += get_value(&node.children[node_idx as usize - 1]);
+        }
+    }
+
+    value
+}
+
+pub fn part2(root: &Node) -> u32 {
+    get_value(root)
 }
 
 #[cfg(test)]
@@ -64,5 +80,6 @@ mod test {
         let input = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
         let input_data = parse(input);
         assert_eq!(part1(&input_data), 138);
+        assert_eq!(part2(&input_data), 66);
     }
 }
