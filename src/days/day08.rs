@@ -1,7 +1,8 @@
 //! ## --- Day 8: Memory Maneuver ---
 //!
+//! TIL: a little bit more about Rust memory layout.
 
-#[derive(Default, Debug)]
+#[derive(Default)]
 pub struct Node {
     pub children: Vec<Node>,
     pub meta: Vec<u32>,
@@ -11,19 +12,19 @@ fn parse_tree(data: &mut Vec<u32>) -> Node {
     let mut children_count = data.pop().unwrap();
     let mut meta_count = data.pop().unwrap();
 
-    let mut current = Node::default();
+    let mut current_node = Node::default();
 
     while children_count != 0 {
         children_count -= 1;
-        current.children.push(parse_tree(data));
+        current_node.children.push(parse_tree(data));
     }
 
     while meta_count != 0 {
         meta_count -= 1;
-        current.meta.push(data.pop().unwrap());
+        current_node.meta.push(data.pop().unwrap());
     }
 
-    current
+    current_node
 }
 
 pub fn parse(input: &str) -> Node {
@@ -37,6 +38,7 @@ pub fn parse(input: &str) -> Node {
     parse_tree(&mut numbers)
 }
 
+/// What is the sum of all metadata entries?
 pub fn part1(root: &Node) -> u32 {
     let mut meta_sum = 0;
     let mut to_visit = vec![];
@@ -67,6 +69,7 @@ fn get_value(node: &Node) -> u32 {
     value
 }
 
+/// What is the value of the root node?
 pub fn part2(root: &Node) -> u32 {
     get_value(root)
 }
