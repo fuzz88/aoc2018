@@ -4,7 +4,7 @@
 //! some kind of topological sorting. That appeared to be right.
 //! I studied wikipedia article on the topic, and tried to implement pseudocode given there, but failed miserably.
 //! Then I looked up the solution in the repo nearby, found notes on topological sorting,
-//! and had looked up the usage of BTreeMap, then decided to take a pause from solving those
+//! and had looked up the usage of `BTreeMap`, then decided to take a pause from solving those
 //! problems, because the last thing I wanted to do was to adapt freshly reminded code.
 //!
 //! This is my own code and I am kind of proud of myself for now. It came out much simplier than I remebered.
