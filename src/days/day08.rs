@@ -5,10 +5,10 @@
 #[derive(Default)]
 pub struct Node {
     pub children: Vec<Node>,
-    pub meta: Vec<u32>,
+    pub meta: Vec<usize>,
 }
 
-fn parse_tree(data: &mut Vec<u32>) -> Node {
+fn parse_tree(data: &mut Vec<usize>) -> Node {
     let mut children_count = data.pop().unwrap();
     let mut meta_count = data.pop().unwrap();
 
@@ -29,7 +29,7 @@ fn parse_tree(data: &mut Vec<u32>) -> Node {
 
 pub fn parse(input: &str) -> Node {
     #[rustfmt::skip]
-    let mut numbers: Vec<u32> =
+    let mut numbers: Vec<usize> =
         input.split_whitespace()
         .map(|n| n.parse().unwrap())
         .rev()
@@ -39,21 +39,21 @@ pub fn parse(input: &str) -> Node {
 }
 
 /// What is the sum of all metadata entries?
-pub fn part1(root: &Node) -> u32 {
+pub fn part1(root: &Node) -> usize {
     let mut meta_sum = 0;
     let mut to_visit = vec![];
 
     to_visit.push(root);
 
     while let Some(node) = to_visit.pop() {
-        meta_sum += node.meta.iter().sum::<u32>();
+        meta_sum += node.meta.iter().sum::<usize>();
         to_visit.extend(&node.children);
     }
 
     meta_sum
 }
 
-fn get_value(node: &Node) -> u32 {
+fn get_value(node: &Node) -> usize {
     if node.children.is_empty() {
         return node.meta.iter().sum();
     }
@@ -61,8 +61,8 @@ fn get_value(node: &Node) -> u32 {
     let mut value = 0;
 
     for &node_idx in &node.meta {
-        if node_idx != 0 && node_idx <= node.children.len() as u32 {
-            value += get_value(&node.children[node_idx as usize - 1]);
+        if node_idx != 0 && node_idx <= node.children.len() {
+            value += get_value(&node.children[node_idx - 1]);
         }
     }
 
@@ -70,7 +70,7 @@ fn get_value(node: &Node) -> u32 {
 }
 
 /// What is the value of the root node?
-pub fn part2(root: &Node) -> u32 {
+pub fn part2(root: &Node) -> usize {
     get_value(root)
 }
 
