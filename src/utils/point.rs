@@ -1,6 +1,13 @@
 //! Utilities to work with points on the plane.
 
 use crate::utils::parse::*;
+use std::ops::Add;
+
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
+pub struct Velocity {
+    pub dx: i32,
+    pub dy: i32,
+}
 
 /// Coordinates of the point.
 #[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
@@ -13,6 +20,14 @@ impl Point {
     /// Manhattan distance from point to point.
     pub fn manhattan_distance(self, other: Point) -> u32 {
         self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    }
+}
+
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, rhs: Point) -> Point {
+        Point { x: self.x + rhs.x, y: self.y + rhs.y }
     }
 }
 
@@ -63,7 +78,7 @@ impl BoundingBox {
 
 impl From<&str> for Point {
     fn from(value: &str) -> Self {
-        let mut iter = value.iter_unsigned();
+        let mut iter = value.iter_signed();
 
         let x = iter.next().unwrap();
         let y = iter.next().unwrap();
