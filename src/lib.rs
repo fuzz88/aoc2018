@@ -4,6 +4,7 @@
 //!
 //! [badge]: https://img.shields.io/badge/github-blue?style=for-the-badge&logo=github&labelColor=grey
 //! [link]:  https://github.com/fuzz88/aoc2018
+#![feature(iter_array_chunks)]
 
 #[doc = "Gadgets for common tasks."]
 pub mod utils {
