@@ -55,16 +55,14 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
         if bytes[*cursor].is_digit() {
             if *cursor == bytes.len() - 1 {
                 break *cursor + 1;
-            } else {
-                *cursor += 1;
             }
+            *cursor += 1;
         } else {
             break *cursor;
         }
     };
     *cursor += 1;
 
-    println!("{} {}", begin, end);
     data[begin..end].parse().ok()
 }
 
