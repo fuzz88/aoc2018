@@ -40,7 +40,6 @@ pub fn part1(input: &(u32, u32)) -> u32 {
                     marbles[1].push_front(marble);
                 }
             });
-
             // remove and score this marble with the current one
             let score = scores.entry(current_player).or_insert(0);
             *score += current_marble + marbles[0].pop_back().unwrap();
@@ -49,16 +48,13 @@ pub fn part1(input: &(u32, u32)) -> u32 {
             if let Some(marble) = marbles[1].pop_front() {
                 marbles[0].push_back(marble);
             }
-
             // 23-ish marble not added
             continue;
         }
-
         // marble added after next
         if let Some(marble) = marbles[1].pop_front() {
             marbles[0].push_back(marble);
         }
-
         // place the current marble
         marbles[0].push_back(current_marble);
 
@@ -69,7 +65,7 @@ pub fn part1(input: &(u32, u32)) -> u32 {
             marbles[1].push_front(marble);
         }
     }
-
+    // the Elf with greatest score is the winner
     *scores.values().max().unwrap()
 }
 
