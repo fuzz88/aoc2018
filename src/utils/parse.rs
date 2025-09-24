@@ -18,16 +18,6 @@ pub struct ParsingUnsigned<'a, T> {
     phantom: PhantomData<T>,
 }
 
-trait IsDigit {
-    fn is_digit(&self) -> bool;
-}
-
-impl IsDigit for u8 {
-    fn is_digit(&self) -> bool {
-        self.wrapping_sub(b'0') < 10
-    }
-}
-
 fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
     data: &str,
     cursor: &mut usize,
@@ -39,7 +29,7 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
     }
 
     let begin = loop {
-        if bytes[*cursor].is_digit() {
+        if bytes[*cursor].is_ascii_digit() {
             if IS_SIGNED && *cursor > 0 && bytes[*cursor - 1] == b'-' {
                 break *cursor - 1;
             }
@@ -52,7 +42,7 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
         }
     };
     let end = loop {
-        if bytes[*cursor].is_digit() {
+        if bytes[*cursor].is_ascii_digit() {
             if *cursor == bytes.len() - 1 {
                 break *cursor + 1;
             }
@@ -61,6 +51,10 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
             break *cursor;
         }
     };
+    // advance to the next character.
+    // if this equals to the length of the data, then
+    // on the next iteration parse_integer will produce None.
+    // we need to advance here, otherwise single-char integers will produce None too.
     *cursor += 1;
 
     data[begin..end].parse().ok()
