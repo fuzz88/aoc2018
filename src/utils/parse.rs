@@ -24,39 +24,50 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
 ) -> Option<T> {
     let bytes = data.as_bytes();
 
+    // checks if the cursor is out-of-the data.
     if *cursor == bytes.len() {
         return None;
     }
 
-    let begin = loop {
-        if bytes[*cursor].is_ascii_digit() {
-            if IS_SIGNED && *cursor > 0 && bytes[*cursor - 1] == b'-' {
-                break *cursor - 1;
+    let (begin, end) = (
+        loop {
+            // searching for the first digit of the integer.
+            if bytes[*cursor].is_ascii_digit() {
+                // checking if the integer is signed.
+                if IS_SIGNED && *cursor > 0 && bytes[*cursor - 1] == b'-' {
+                    // it is signed: breaking on the sign.
+                    break *cursor - 1;
+                }
+                // if not: breaking on the digit.
+                break *cursor;
             }
-            break *cursor;
-        }
-        *cursor += 1;
-
-        if *cursor == bytes.len() {
-            return None;
-        }
-    };
-    let end = loop {
-        if bytes[*cursor].is_ascii_digit() {
-            if *cursor == bytes.len() - 1 {
-                break *cursor + 1;
-            }
+            // not a digit yet. advance.
             *cursor += 1;
-        } else {
-            break *cursor;
-        }
-    };
-    // advance to the next character.
-    // if this equals to the length of the data, then
-    // on the next iteration parse_integer will produce None.
-    // we need to advance here, otherwise single-char integers will produce None too.
-    *cursor += 1;
 
+            // no single digit in the data.
+            if *cursor == bytes.len() {
+                return None;
+            }
+        },
+        loop {
+            // check if the current byte is the digit.
+            if bytes[*cursor].is_ascii_digit() {
+                // if the cursor is on the end of the data.
+                if *cursor + 1 == bytes.len() {
+                    // advance the cursor out-of-the data.
+                    // the end of the data is the end of the integer.
+                    *cursor += 1;
+                    break *cursor;
+                }
+                // advance the cursor to the next byte and check.
+                *cursor += 1;
+            } else {
+                // not a digit is the end of the integer.
+                break *cursor;
+            }
+        },
+    );
+    // parsing integer if found.
     data[begin..end].parse().ok()
 }
 
