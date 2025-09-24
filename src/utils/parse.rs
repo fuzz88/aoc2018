@@ -33,6 +33,7 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
     cursor: &mut usize,
 ) -> Option<T> {
     let bytes = data.as_bytes();
+
     if *cursor == bytes.len() {
         return None;
     }
@@ -51,17 +52,19 @@ fn parse_integer<const IS_SIGNED: bool, T: FromStr + Integer>(
         }
     };
     let end = loop {
-        if *cursor == bytes.len() - 1 {
-            break *cursor + 1;
-        }
         if bytes[*cursor].is_digit() {
-            *cursor += 1;
+            if *cursor == bytes.len() - 1 {
+                break *cursor + 1;
+            } else {
+                *cursor += 1;
+            }
         } else {
             break *cursor;
         }
     };
     *cursor += 1;
 
+    println!("{} {}", begin, end);
     data[begin..end].parse().ok()
 }
 
