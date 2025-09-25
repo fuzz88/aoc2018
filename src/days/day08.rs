@@ -58,15 +58,11 @@ fn get_value(node: &Node) -> usize {
         return node.meta.iter().sum();
     }
 
-    let mut value = 0;
-
-    for &node_idx in &node.meta {
-        if node_idx != 0 && node_idx <= node.children.len() {
-            value += get_value(&node.children[node_idx - 1]);
-        }
-    }
-
-    value
+    node.meta
+        .iter()
+        .filter(|&&node_idx| node_idx != 0 && node_idx <= node.children.len())
+        .map(|node_idx| get_value(&node.children[node_idx - 1]))
+        .sum()
 }
 
 /// What is the value of the root node?
