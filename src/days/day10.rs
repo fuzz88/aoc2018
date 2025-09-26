@@ -23,7 +23,7 @@ pub fn part1(input: &(Vec<Point>, Vec<Velocity>)) -> String {
     let mut result = String::new();
 
     loop {
-        points = points.iter().zip(velocities.iter()).map(|(&p, &v)| p + v).collect();
+        points.iter_mut().zip(velocities.iter()).for_each(|(p, v)| *p = *p + *v);
         let mut bounding_box = BoundingBox::from(points.as_slice());
 
         // actually, this height was choosen empirically
@@ -73,7 +73,7 @@ pub fn part2(input: &(Vec<Point>, Vec<Velocity>)) -> u32 {
 
     loop {
         seconds += 1;
-        points = points.iter().zip(velocities.iter()).map(|(&p, &v)| p + v).collect();
+        points.iter_mut().zip(velocities.iter()).for_each(|(p, v)| *p = *p + *v);
         let bounding_box = BoundingBox::from(points.as_slice());
 
         // actually, this height was choosen empirically
