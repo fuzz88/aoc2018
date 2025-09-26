@@ -53,14 +53,12 @@ impl From<&[Point]> for BoundingBox {
                 right = point.x + 1;
             }
             if point.x < left {
-                assert!(point.x > 0);
                 left = point.x - 1;
             }
             if point.y > bottom {
                 bottom = point.y + 1;
             }
             if point.y < top {
-                assert!(point.y > 0);
                 top = point.y - 1;
             }
         }
