@@ -1,5 +1,7 @@
 //! ## --- Day 10: The Stars Align ---
 //!
+//! Manually iterated around minimal-height of the `BoundingBox`.
+//! The target height was found quickly. Don't know what else to say.
 
 use crate::utils::point::*;
 
@@ -14,12 +16,71 @@ pub fn parse(input: &str) -> (Vec<Point>, Vec<Velocity>) {
         .unzip()
 }
 
-pub fn part1(input: &(Vec<Point>, Vec<Velocity>)) -> u32 {
-    0
+/// What message will eventually appear in the sky?
+pub fn part1(input: &(Vec<Point>, Vec<Velocity>)) -> String {
+    let mut points = input.0.clone();
+    let velocities = input.1.clone();
+    let mut result = String::new();
+
+    loop {
+        points = points.iter().zip(velocities.iter()).map(|(&p, &v)| p + v).collect();
+        let mut bounding_box = BoundingBox::from(points.as_slice());
+
+        // actually, this height was choosen empirically
+        if bounding_box.bottom - bounding_box.top == 11 {
+            // got a match
+            // normalizing coordinates to (0, 0) as left-top corner.
+            // for printing.
+            let dy = bounding_box.top - 2;
+
+            for p in &mut points {
+                p.y -= dy;
+            }
+            bounding_box.bottom -= dy;
+            bounding_box.top -= dy - 1;
+
+            let dx = bounding_box.left;
+
+            for p in &mut points {
+                p.x -= dx;
+            }
+            bounding_box.right -= dx;
+            bounding_box.left -= dx - 1;
+
+            for y in bounding_box.top..bounding_box.bottom {
+                for x in bounding_box.left..bounding_box.right {
+                    if points.contains(&Point { x, y }) {
+                        result.push('#');
+                    } else {
+                        result.push('.');
+                    }
+                }
+                result.push('\n');
+            }
+            break;
+        }
+    }
+
+    result
 }
 
+/// Exactly how many seconds would they have needed to wait for that message to appear?
 pub fn part2(input: &(Vec<Point>, Vec<Velocity>)) -> u32 {
-    0
+    let mut points = input.0.clone();
+    let velocities = input.1.clone();
+
+    let mut seconds = 0;
+
+    loop {
+        seconds += 1;
+        points = points.iter().zip(velocities.iter()).map(|(&p, &v)| p + v).collect();
+        let bounding_box = BoundingBox::from(points.as_slice());
+
+        // actually, this height was choosen empirically
+        if bounding_box.bottom - bounding_box.top == 11 {
+            return seconds;
+        }
+    }
 }
 
 #[cfg(test)]
