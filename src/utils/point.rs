@@ -43,27 +43,14 @@ pub struct BoundingBox {
 impl From<&[Point]> for BoundingBox {
     /// Calculates the bounding for the list of points.
     fn from(points: &[Point]) -> Self {
-        let mut top = i32::MAX; // min_y
-        let mut left = i32::MAX; // min_x
-        let mut right = i32::MIN; // max_x
-        let mut bottom = i32::MIN; // max_y
+        let (left, right, top, bottom) = points.iter().fold(
+            (i32::MAX, i32::MIN, i32::MAX, i32::MIN),
+            |(min_x, max_x, min_y, max_y), p| {
+                (min_x.min(p.x), max_x.max(p.x), min_y.min(p.y), max_y.max(p.y))
+            },
+        );
 
-        for point in points {
-            if point.x > right {
-                right = point.x + 1;
-            }
-            if point.x < left {
-                left = point.x - 1;
-            }
-            if point.y > bottom {
-                bottom = point.y + 1;
-            }
-            if point.y < top {
-                top = point.y - 1;
-            }
-        }
-
-        BoundingBox { top, left, right, bottom }
+        BoundingBox { top: top - 1, left: left - 1, right: right + 1, bottom: bottom + 1 }
     }
 }
 
