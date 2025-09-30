@@ -1,5 +1,11 @@
 //! ## --- Day 11: Chronal Charge ---
 //!
+//! Yeah. Solution is incomplete. We need shift the square to not recalculate sum of levels entirely. Maybe there is also the reason why the largest in power squares is relatively so small in size.
+//!
+//! TODO: shift square.
+//!
+//! We are checking squares up to size of 20 for now. Enough to find the answer by checking in into
+//! Advent of Code, but not enough to reason about answer's validity.
 
 pub fn parse(input: &str) -> u32 {
     input.trim().parse().unwrap()
@@ -32,7 +38,7 @@ fn find_largest(field: &[i32; 90000], size: usize) -> (usize, usize, i32) {
 
     result
 }
-
+/// What is the X,Y coordinate of the top-left fuel cell of the 3x3 square with the largest total power?
 pub fn part1(input: &u32) -> String {
     let mut field = [0; 300 * 300];
     let serial_number = *input;
@@ -48,6 +54,7 @@ pub fn part1(input: &u32) -> String {
     format!("{},{}", largest.0, largest.1)
 }
 
+/// What is the X,Y,size identifier of the square with the largest total power?
 pub fn part2(input: &u32) -> String {
     let mut x_y = String::new();
     let mut field = [0; 300 * 300];
