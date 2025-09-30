@@ -1,11 +1,7 @@
 //! ## --- Day 11: Chronal Charge ---
 //!
-//! Yeah. Solution is incomplete. We need shift the square to not recalculate sum of levels entirely. Maybe there is also the reason why the largest in power squares is relatively so small in size.
+//! Got a hint to use https://en.wikipedia.org/wiki/Summed-area_table
 //!
-//! TODO: shift square.
-//!
-//! We are checking squares up to size of 20 for now. Enough to find the answer by checking in into
-//! Advent of Code, but not enough to reason about answer's validity.
 
 pub fn parse(input: &str) -> u32 {
     input.trim().parse().unwrap()
