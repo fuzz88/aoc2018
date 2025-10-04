@@ -29,9 +29,11 @@ pub fn parse(input: &str) -> Input {
     let mut rules = Rules::new();
 
     for line in lines.skip(1) {
-        let components: Vec<&str> = line.split(" => ").collect();
+        let mut components = line.split(" => ");
 
-        let note = components[0]
+        let note = components
+            .next()
+            .unwrap()
             .chars()
             .map(|c| match c {
                 '#' => 1,
@@ -40,7 +42,7 @@ pub fn parse(input: &str) -> Input {
             })
             .collect();
 
-        let pot = match components[1].chars().next().unwrap() {
+        let pot = match components.next().unwrap().chars().next().unwrap() {
             '#' => 1,
             '.' => 0,
             _ => unreachable!(),
