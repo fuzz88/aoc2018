@@ -54,6 +54,7 @@ pub fn parse(input: &str) -> Input {
     (initial_state, rules)
 }
 
+/// After 20 generations, what is the sum of the numbers of all pots which contain a plant?
 pub fn part1(input: &Input) -> i32 {
     0
 }
@@ -87,5 +88,6 @@ mod test {
 
         let input_data = parse(input);
         println!("{:?}", input_data);
+        assert_eq!(part1(&input_data), 325);
     }
 }
