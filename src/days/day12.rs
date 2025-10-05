@@ -1,6 +1,15 @@
 //! ## --- Day 12: Subterranean Sustainability ---
 //!
-//!  Hm.
+//!  The automata part is easy. The key idea is to properly augment state to have enough pots for pattern matching. I assume that we need 4 pots beside pot with plant, to match (....#) pattern for example, as we can't have (.....) pattern to match on infinite set of empty pots.
+//!
+//!  I looked up the idea of stabilization for part two in the neighbour's repo. But the neighbour makes the assumtion that two consequent deltas to be equal is enough for stabilization to be reached.
+//!  But I have this sequency of deltas near the 90th generation: 46 46 48 48 50 50 50 50 ...
+//!
+//!  So I did research my own deltas and use python as calculator to find out correct sum of positions.
+//!
+//!  Had fun but taking your own time is always be better as there no reason to hurry up.
+//!
+//!  "Don't look up, solutions, buddy." -- note for future self.
 
 use std::collections::HashMap;
 
@@ -72,8 +81,8 @@ pub fn part1(input: &Input) -> u32 {
         let mut l_augment = current_state.iter().position(|el| *el == 1).unwrap();
         let mut r_augment = current_state.iter().rposition(|el| *el == 1).unwrap();
 
-        // lets augment our state with four empty pot after the leftmost and rightmost plant
-        // for pattern matching.
+        // lets augment our state with four empty pot before the leftmost and after the rightmost plant
+        // to make pattern matching easier.
 
         // augment state with empty pots
         while (4 - (len - r_augment)) as i32 > 0 {
@@ -82,6 +91,7 @@ pub fn part1(input: &Input) -> u32 {
         }
         while (4 - l_augment) as i32 > 0 {
             current_state.insert(0, 0);
+            // when we add pots to left of the state, we are shifting original positions.
             left_shift += 1;
             l_augment += 1;
         }
